@@ -32,8 +32,8 @@ app.get('/playlists/:nombre', (pedido, respuesta) => {
     respuesta.send(resultado)
 })
 
-app.get('/playlists', (pedido, respuesta) => {
-    respuesta.send(playlists)
+app.get('/playlists', (req, res) => {
+    res.send(playlists)
 })
 app.post('/playlists', (pedido, respuesta) => {
     if (pedido.body.nombre != "") {
