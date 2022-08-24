@@ -26,7 +26,7 @@ let playlists = [
 app.get('/playlists/:nombre', (req, res) => {
     let nombre = req.params.nombre
     let resultado = playlists.find(x => x.nombre == nombre)
-    if (resultado.length != 1) {
+    if (resultado == null) {
         res.status(404).send(resultado)
         return
     }
@@ -49,7 +49,7 @@ app.post('/playlists', (req, res) => {
 app.put('/playlists/:nombre', (req, res) => {
     let nombre = req.params.nombre
     let playlist = playlists.find(x => x.nombre == nombre)
-    playlist.descripcion = pedido.body.descripcion
+    playlist.descripcion = req.body.descripcion
     res.status(204).send(playlist)
     if (req.body.nombre != "") {
         playlists.playlist = req.body.playlist
@@ -112,7 +112,7 @@ app.post('/playlists/:nombre/canciones', (req, res) => {
         return
     }
 
-    if (pedido.body.nombre != "") {
+    if (req.body.nombre != "") {
         playlist.canciones.push(req.body)
         res.status(201).send(req.body)
     }
@@ -141,7 +141,7 @@ app.put('/playlists/:nombre/canciones/:titulo', (req, res) => {
     res.send()
 })
 app.delete('/playlists/:nombre/canciones/:titulo', (req, res) => {
-    let nombre = req.arams.nombre
+    let nombre = req.params.nombre
     let titulo = req.params.titulo
     let playlist = playlists.find(x => x.nombre == nombre)
     let cancionAEliminar = playlist.canciones.find(x => x.titulo == titulo)
