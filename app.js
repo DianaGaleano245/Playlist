@@ -41,7 +41,8 @@ app.post('/playlists', (pedido, respuesta) => {
         respuesta.status(201).send(pedido.body)
 
     }
-    else respuesta.status(400).send(pedido.body)
+    else
+        respuesta.status(400).send(pedido.body)
 })
 
 app.put('/playlists/:nombre', (pedido, respuesta) => {
