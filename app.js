@@ -1,3 +1,4 @@
+const { response } = require('express')
 const express = require('express')
 const app = express()
 app.use(express.json())
@@ -22,132 +23,134 @@ let playlists = [
             }]
     }
 ]
-app.get('/playlists/:nombre', (pedido, respuesta) => {
-    let nombre = pedido.params.nombre
-    let resultado = playlists.filter(x => x.nombre == nombre)
+app.get('/playlists/:nombre', (req, res) => {
+    let nombre = req.params.nombre
+    let resultado = playlists.find(x => x.nombre == nombre)
     if (resultado.length != 1) {
-        respuesta.status(404).send(resultado)
+        res.status(404).send(resultado)
         return
     }
-    respuesta.send(resultado)
+    res.send(resultado)
 })
 
 app.get('/playlists', (req, res) => {
     res.send(playlists)
 })
-app.post('/playlists', (pedido, respuesta) => {
-    if (pedido.body.nombre != "") {
-        playlists.push(pedido.body)
-        respuesta.status(201).send(pedido.body)
+app.post('/playlists', (req, res) => {
+    if (req.body.nombre != "") {
+        playlists.push(req.body)
+        res.status(201).send(req.body)
 
     }
     else
-        respuesta.status(400).send(pedido.body)
+        res.status(400).send(req.body)
 })
 
-app.put('/playlists/:nombre', (pedido, respuesta) => {
-    let nombre = pedido.params.nombre
-    let playlist = playlists.filter(x => x.nombre == nombre).at(0)
+app.put('/playlists/:nombre', (req, res) => {
+    let nombre = req.params.nombre
+    let playlist = playlists.find(x => x.nombre == nombre)
     playlist.descripcion = pedido.body.descripcion
-    respuesta.status(204).send(playlist)
-    if (pedido.body.nombre != "") {
-        playlists.push(pedido.body)
-        respuesta.status(204).send(pedido.body)
+    res.status(204).send(playlist)
+    if (req.body.nombre != "") {
+        playlists.playlist = req.body.playlist
+        res.status(204).send(req.body)
 
     }
-    else respuesta.status(404).send(pedido.body)
-    respuesta.status(409).send(pedido.body)
+    else res.status(404).send(req.body)
+    res.status(409).send(req.body)
 })
 
-app.delete('/playlists/:nombre', (pedido, respuesta) => {
-    let nombre = pedido.params.nombre
-    let playlistAEliminar = playlists.filter(x => x.nombre == nombre).at(0)
-    if (playlistAEliminar == null)
-        respuesta.status(404).send("no se encuentra la playlist")
-
-    let indice = playlists.indexOf(playlistAEliminar)
+app.delete('/playlists/:nombre', (req, res) => {
+    let nombre = req.params.nombre
+    let playlist = playlists.find(x => x.nombre == nombre)
+    if (playlist == null) {
+        response.status(404).send("no se encuentra la playlist")
+        return
+    }
+    let indice = playlists.indexOf(playlist)
     playlists.splice(indice, 1)
-    respuesta.send("se elimino la playlist")
+    res.send("se elimino la playlist")
 })
 
-app.get('/playlists/:nombre/canciones', (pedido, respuesta) => {
-    let nombre = pedido.params.nombre
-    let playlist = playlists.filter(x => x.nombre == nombre).at(0)
-    if (playlist == null)
-        respuesta.status(404).send("No se encuentra la playlist")
-
-    respuesta.send(playlist.canciones)
+app.get('/playlists/:nombre/canciones', (req, res) => {
+    let nombre = req.params.nombre
+    let playlist = playlists.find(x => x.nombre == nombre)
+    if (playlist == null) {
+        res.status(404).send("No se encuentra la playlist")
+        return
+    }
+    res.send(playlist.canciones)
 })
-app.get('/playlists/:nombre/canciones/:titulo', (pedido, respuesta) => {
-    let nombre = pedido.params.nombre
-    let titulo = pedido.params.titulo
+app.get('/playlists/:nombre/canciones/:titulo', (req, res) => {
+    let nombre = req.params.nombre
+    let titulo = req.params.titulo
 
-    let playlist = playlists.filter(x => x.nombre == nombre).at(0)
+    let playlist = playlists.find(x => x.nombre == nombre)
 
     if (playlist == null) {
-        respuesta.status(404).send("No se encuentra la playlist")
+        response.status(404).send("No se encuentra la playlist")
         return
     }
 
-    let cancion = playlist.canciones.filter(x => x.titulo == titulo).at(0)
+    let cancion = playlist.canciones.find(x => x.titulo == titulo)
 
     if (cancion == null) {
-        respuesta.status(404).send("No se encuentra la cancion")
+        res.status(404).send("No se encuentra la cancion")
         return
     }
 
-    respuesta.send(cancion)
+    res.send(cancion)
 })
 
-app.post('/playlists/:nombre/canciones', (pedido, respuesta) => {
-    let nombre = pedido.params.nombre
+app.post('/playlists/:nombre/canciones', (req, res) => {
+    let nombre = req.params.nombre
 
-    let playlist = playlists.filter(x => x.nombre == nombre).at(0)
+    let playlist = playlists.find(x => x.nombre == nombre)
 
     if (playlist == null) {
-        respuesta.status(404).send("No se encuentra la playlist")
+        res.status(404).send("No se encuentra la playlist")
         return
     }
 
     if (pedido.body.nombre != "") {
-        playlist.canciones.push(pedido.body)
-        respuesta.status(201).send(pedido.body)
+        playlist.canciones.push(req.body)
+        res.status(201).send(req.body)
     }
     else
-        respuesta.status(400).send()
+        res.status(400).send()
 })
 
-app.put('/playlists/:nombre/canciones/:titulo', (pedido, respuesta) => {
-    let nombre = pedido.params.nombre
-    let playlist = playlists.filter(x => x.nombre == nombre).at(0)
+app.put('/playlists/:nombre/canciones/:titulo', (req, res) => {
+    let nombre = req.params.nombre
+    let playlist = playlists.find(x => x.nombre == nombre)
 
     if (playlist == null) {
-        respuesta.status(404).send("No se encuentra la playlist")
+        res.status(404).send("No se encuentra la playlist")
         return
     }
-    let titulo = pedido.params.titulo
+    let titulo = req.params.titulo
 
-    let cancion = playlist.canciones.filter(x => x.titulo == titulo).at(0)
+    let cancion = playlist.canciones.find(x => x.titulo == titulo)
     if (cancion == null) {
-        respuesta.status(404).send("No se encuentra la cancion")
+        res.status(404).send("No se encuentra la cancion")
         return
     }
-    cancion.artista = pedido.body.artista
-    cancion.album = pedido.body.album
-    cancion.año = pedido.body.año
-    respuesta.send()
+    cancion.artista = req.body.artista
+    cancion.album = req.body.album
+    cancion.año = req.body.año
+    res.send()
 })
-app.delete('/playlists/:nombre/canciones/:titulo', (pedido, respuesta) => {
-    let nombre = pedido.params.nombre
-    let titulo = pedido.params.titulo
-    let playlist = playlists.filter(x => x.nombre == nombre).at(0)
-    let cancionAEliminar = playlist.canciones.filter(x => x.titulo == titulo).at(0)
+app.delete('/playlists/:nombre/canciones/:titulo', (req, res) => {
+    let nombre = req.arams.nombre
+    let titulo = req.params.titulo
+    let playlist = playlists.find(x => x.nombre == nombre)
+    let cancionAEliminar = playlist.canciones.find(x => x.titulo == titulo)
     if (cancionAEliminar == null)
-        respuesta.status(404).send("no se encuentra la playlist")
+        res.status(404).send("no se encuentra la playlist")
 
     let indice = playlist.canciones.indexOf(cancionAEliminar)
     playlists.splice(indice, 1)
-    respuesta.send("se elimino la cancion")
+    res.send("se elimino la cancion")
 })
 
 app.listen(port)
