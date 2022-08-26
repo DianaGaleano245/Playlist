@@ -1,8 +1,11 @@
 import express, { json } from 'express'
 const app = express()
 app.use(json())
+app.use(morgan('dev'))
+import morgan from 'morgan'
+import 'dotenv/config'
 
-const port = 4000
+const port = process.env.PORT
 
 let playlists = [
     {
