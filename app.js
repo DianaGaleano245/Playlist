@@ -1,7 +1,7 @@
-const { response } = require('express')
-const express = require('express')
+import express, { json } from 'express'
 const app = express()
-app.use(express.json())
+app.use(json())
+
 const port = 4000
 
 let playlists = [
