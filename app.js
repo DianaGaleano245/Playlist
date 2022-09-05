@@ -24,8 +24,8 @@ let playlists = [
 ]
 app.get('/playlists/:nombre', (pedido, respuesta) => {
     let nombre = pedido.params.nombre
-    let resultado = playlists.filter(x => x.nombre == nombre)
-    if (resultado.length != 1) {
+    let resultado = playlists.find(x => x.nombre == nombre)
+    if (resultado.length == 0) {
         respuesta.status(404).send(resultado)
         return
     }
@@ -46,7 +46,7 @@ app.post('/playlists', (pedido, respuesta) => {
 
 app.put('/playlists/:nombre', (pedido, respuesta) => {
     let nombre = pedido.params.nombre
-    let playlist = playlists.filter(x => x.nombre == nombre).at(0)
+    let playlist = playlists.find(x => x.nombre == nombre)
     playlist.descripcion = pedido.body.descripcion
     respuesta.status(204).send(playlist)
     if (pedido.body.nombre != "") {
@@ -60,7 +60,7 @@ app.put('/playlists/:nombre', (pedido, respuesta) => {
 
 app.delete('/playlists/:nombre', (pedido, respuesta) => {
     let nombre = pedido.params.nombre
-    let playlistAEliminar = playlists.filter(x => x.nombre == nombre).at(0)
+    let playlistAEliminar = playlists.find(x => x.nombre == nombre)
     if (playlistAEliminar == null)
         respuesta.status(404).send("no se encuentra la playlist")
 
@@ -71,7 +71,7 @@ app.delete('/playlists/:nombre', (pedido, respuesta) => {
 
 app.get('/playlists/:nombre/canciones', (pedido, respuesta) => {
     let nombre = pedido.params.nombre
-    let playlist = playlists.filter(x => x.nombre == nombre).at(0)
+    let playlist = playlists.find(x => x.nombre == nombre)
     if (playlist == null)
         respuesta.status(404).send("No se encuentra la playlist")
 
@@ -81,14 +81,14 @@ app.get('/playlists/:nombre/canciones/:titulo', (pedido, respuesta) => {
     let nombre = pedido.params.nombre
     let titulo = pedido.params.titulo
 
-    let playlist = playlists.filter(x => x.nombre == nombre).at(0)
+    let playlist = playlists.find(x => x.nombre == nombre)
 
     if (playlist == null) {
         respuesta.status(404).send("No se encuentra la playlist")
         return
     }
 
-    let cancion = playlist.canciones.filter(x => x.titulo == titulo).at(0)
+    let cancion = playlist.canciones.find(x => x.titulo == titulo)
 
     if (cancion == null) {
         respuesta.status(404).send("No se encuentra la cancion")
@@ -101,7 +101,7 @@ app.get('/playlists/:nombre/canciones/:titulo', (pedido, respuesta) => {
 app.post('/playlists/:nombre/canciones', (pedido, respuesta) => {
     let nombre = pedido.params.nombre
 
-    let playlist = playlists.filter(x => x.nombre == nombre).at(0)
+    let playlist = playlists.find(x => x.nombre == nombre)
 
     if (playlist == null) {
         respuesta.status(404).send("No se encuentra la playlist")
@@ -118,7 +118,7 @@ app.post('/playlists/:nombre/canciones', (pedido, respuesta) => {
 
 app.put('/playlists/:nombre/canciones/:titulo', (pedido, respuesta) => {
     let nombre = pedido.params.nombre
-    let playlist = playlists.filter(x => x.nombre == nombre).at(0)
+    let playlist = playlists.find(x => x.nombre == nombre)
 
     if (playlist == null) {
         respuesta.status(404).send("No se encuentra la playlist")
@@ -126,7 +126,7 @@ app.put('/playlists/:nombre/canciones/:titulo', (pedido, respuesta) => {
     }
     let titulo = pedido.params.titulo
 
-    let cancion = playlist.canciones.filter(x => x.titulo == titulo).at(0)
+    let cancion = playlist.canciones.find(x => x.titulo == titulo)
     if (cancion == null) {
         respuesta.status(404).send("No se encuentra la cancion")
         return
@@ -139,8 +139,8 @@ app.put('/playlists/:nombre/canciones/:titulo', (pedido, respuesta) => {
 app.delete('/playlists/:nombre/canciones/:titulo', (pedido, respuesta) => {
     let nombre = pedido.params.nombre
     let titulo = pedido.params.titulo
-    let playlist = playlists.filter(x => x.nombre == nombre).at(0)
-    let cancionAEliminar = playlist.canciones.filter(x => x.titulo == titulo).at(0)
+    let playlist = playlists.find(x => x.nombre == nombre)
+    let cancionAEliminar = playlist.canciones.find(x => x.titulo == titulo)
     if (cancionAEliminar == null)
         respuesta.status(404).send("no se encuentra la playlist")
 
