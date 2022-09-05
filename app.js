@@ -1,9 +1,9 @@
 import express, { json } from 'express'
+import morgan from 'morgan'
+import 'dotenv/config'
 const app = express()
 app.use(json())
 app.use(morgan('dev'))
-import morgan from 'morgan'
-import 'dotenv/config'
 
 const port = process.env.PORT
 
