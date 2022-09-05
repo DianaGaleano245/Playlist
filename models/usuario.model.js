@@ -9,13 +9,12 @@ const pleylistSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    canciones:[
+    canciones:{
         type: String,
         required: true
-    ]
+    }
 },
     {       
-
         timestamps: true,
         versionKey: false
     }
