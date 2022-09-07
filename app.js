@@ -22,6 +22,7 @@ let playlists = [
             }]
     }
 ]
+//nueva linea
 app.get('/playlists/:nombre', (pedido, respuesta) => {
     let nombre = pedido.params.nombre
     let resultado = playlists.filter(x => x.nombre == nombre)
