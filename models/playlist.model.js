@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 
-const pleylistSchema = new mongoose.Schema({
+const playlistSchema = new mongoose.Schema({
     nombre: {
         type: String,
         required: true
@@ -20,6 +20,6 @@ const pleylistSchema = new mongoose.Schema({
     }
 )
 
-const Usuario = mongoose.model('Usuario', usuarioSchema)
+const playlist = mongoose.model('playlist', playlistSchema)
 
-export default Usuario
+export default playlist

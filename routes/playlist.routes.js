@@ -1,126 +1,150 @@
-router.get('/playlists/:nombre', (pedido, respuesta) => {
-    let nombre = pedido.params.nombre
-    let resultado = playlists.filter(x => x.nombre == nombre)
+import express from 'express'
+const router = express.Router()
+import playlist from '../models/playlist.model'
+let playlists = [
+    {
+        "nombre": "coldplay",
+        "descripcion": "es una banda británica de pop rock y rock alternativo formada en Londres en 1996",
+        "canciones": [
+            {
+                "titulo": "Paradise",
+                "artista": "Chris Martin, Jon Buckland, Guy Berryman y Will Champion.",
+                "album": "Mylo Xyloto",
+                "año": "2011"
+            },
+            {
+                "titulo": "higher Power",
+                "artista": "Chris Martin, Jon Buckland, Guy Berryman y Will Champion.",
+                "album": "Music of the Spheres",
+                "año": "2021"
+            }]
+    }
+]
+router.get('/playlists/:nombre', async (req, res) => {
+    let nombre = req.params.nombre
+    let resultado = playlists.find(x => x.nombre == nombre)
     if (resultado.length != 1) {
-        respuesta.status(404).send(resultado)
+        res.status(404).send(resultado)
         return
     }
-    respuesta.send(resultado)
+    res.send(resultado)
 })
 
-router.get('/playlists', (pedido, respuesta) => {
-    respuesta.send(playlists)
+router.get('/playlists', (req, res) => {
+    res.send(playlists)
 })
-router.post('/playlists', (pedido, respuesta) => {
-    if (pedido.body.nombre != "") {
-        playlists.push(pedido.body)
-        respuesta.status(201).send(pedido.body)
+router.post('/playlists', (req, res) => {
+    if (req.body.nombre != "") {
+        playlists.push(req.body)
+        res.status(201).send(req.body)
 
     }
-    else respuesta.status(400).send(pedido.body)
+    else res.status(400).send(req.body)
 })
 
-router.put('/playlists/:nombre', (pedido, respuesta) => {
-    let nombre = pedido.params.nombre
-    let playlist = playlists.filter(x => x.nombre == nombre).at(0)
-    playlist.descripcion = pedido.body.descripcion
-    respuesta.status(204).send(playlist)
-    if (pedido.body.nombre != "") {
-        playlists.push(pedido.body)
-        respuesta.status(204).send(pedido.body)
+router.put('/playlists/:nombre', (req, res) => {
+    let nombre = req.params.nombre
+    let playlist = playlists.find(x => x.nombre == nombre).at(0)
+    playlist.descripcion = req.body.descripcion
+    res.status(204).send(playlist)
+    if (req.body.nombre != "") {
+        playlists.push(req.body)
+        res.status(204).send(req.body)
 
     }
-    else respuesta.status(404).send(pedido.body)
-    respuesta.status(409).send(pedido.body)
+    else res.status(404).send(req.body)
+    res.status(409).send(req.body)
 })
 
-router.delete('/playlists/:nombre', (pedido, respuesta) => {
-    let nombre = pedido.params.nombre
-    let playlistAEliminar = playlists.filter(x => x.nombre == nombre).at(0)
+router.delete('/playlists/:nombre', (req, res) => {
+    let nombre = req.params.nombre
+    let playlistAEliminar = playlists.find(x => x.nombre == nombre).at(0)
     if (playlistAEliminar == null)
-        respuesta.status(404).send("no se encuentra la playlist")
+        res.status(404).send("no se encuentra la playlist")
 
     let indice = playlists.indexOf(playlistAEliminar)
     playlists.splice(indice, 1)
-    respuesta.send("se elimino la playlist")
+    res.send("se elimino la playlist")
 })
 
-router.get('/playlists/:nombre/canciones', (pedido, respuesta) => {
-    let nombre = pedido.params.nombre
-    let playlist = playlists.filter(x => x.nombre == nombre).at(0)
+router.get('/playlists/:nombre/canciones', (req, res) => {
+    let nombre = req.params.nombre
+    let playlist = playlists.find(x => x.nombre == nombre).at(0)
     if (playlist == null)
-        respuesta.status(404).send("No se encuentra la playlist")
+        res.status(404).send("No se encuentra la playlist")
 
-    respuesta.send(playlist.canciones)
+    res.send(playlist.canciones)
 })
-router.get('/playlists/:nombre/canciones/:titulo', (pedido, respuesta) => {
-    let nombre = pedido.params.nombre
-    let titulo = pedido.params.titulo
+router.get('/playlists/:nombre/canciones/:titulo', (req, res) => {
+    let nombre = req.params.nombre
+    let titulo = req.params.titulo
 
-    let playlist = playlists.filter(x => x.nombre == nombre).at(0)
+    let playlist = playlists.find(x => x.nombre == nombre).at(0)
 
     if (playlist == null) {
-        respuesta.status(404).send("No se encuentra la playlist")
+        res.status(404).send("No se encuentra la playlist")
         return
     }
 
-    let cancion = playlist.canciones.filter(x => x.titulo == titulo).at(0)
+    let cancion = playlist.canciones.find(x => x.titulo == titulo).at(0)
 
     if (cancion == null) {
-        respuesta.status(404).send("No se encuentra la cancion")
+        res.status(404).send("No se encuentra la cancion")
         return
     }
 
-    respuesta.send(cancion)
+    res.send(cancion)
 })
 
-router.post('/playlists/:nombre/canciones', (pedido, respuesta) => {
-    let nombre = pedido.params.nombre
+router.post('/playlists/:nombre/canciones', (req, res) => {
+    let nombre = req.params.nombre
 
-    let playlist = playlists.filter(x => x.nombre == nombre).at(0)
+    let playlist = playlists.find(x => x.nombre == nombre).at(0)
 
     if (playlist == null) {
-        respuesta.status(404).send("No se encuentra la playlist")
+        res.status(404).send("No se encuentra la playlist")
         return
     }
 
-    if (pedido.body.nombre != "") {
-        playlist.canciones.push(pedido.body)
-        respuesta.status(201).send(pedido.body)
+    if (req.body.nombre != "") {
+        playlist.canciones.push(req.body)
+        res.status(201).send(req.body)
     }
     else
-        respuesta.status(400).send()
+        res.status(400).send()
 })
 
-router.put('/playlists/:nombre/canciones/:titulo', (pedido, respuesta) => {
-    let nombre = pedido.params.nombre
-    let playlist = playlists.filter(x => x.nombre == nombre).at(0)
+router.put('/playlists/:nombre/canciones/:titulo', (req, res) => {
+    let nombre = req.params.nombre
+    let playlist = playlists.find(x => x.nombre == nombre).at(0)
 
     if (playlist == null) {
-        respuesta.status(404).send("No se encuentra la playlist")
+        res.status(404).send("No se encuentra la playlist")
         return
     }
-    let titulo = pedido.params.titulo
+    let titulo = req.params.titulo
 
-    let cancion = playlist.canciones.filter(x => x.titulo == titulo).at(0)
+    let cancion = playlist.canciones.find(x => x.titulo == titulo).at(0)
     if (cancion == null) {
-        respuesta.status(404).send("No se encuentra la cancion")
+        res.status(404).send("No se encuentra la cancion")
         return
     }
-    cancion.artista = pedido.body.artista
-    cancion.album = pedido.body.album
-    cancion.año = pedido.body.año
-    respuesta.send()
+    cancion.artista = req.body.artista
+    cancion.album = req.body.album
+    cancion.año = req.body.año
+    res.send()
 })
-router.delete('/playlists/:nombre/canciones/:titulo', (pedido, respuesta) => {
-    let nombre = pedido.params.nombre
-    let titulo = pedido.params.titulo
-    let playlist = playlists.filter(x => x.nombre == nombre).at(0)
-    let cancionAEliminar = playlist.canciones.filter(x => x.titulo == titulo).at(0)
+router.delete('/playlists/:nombre/canciones/:titulo', (req, res) => {
+    let nombre = req.params.nombre
+    let titulo = req.params.titulo
+    let playlist = playlists.find(x => x.nombre == nombre).at(0)
+    let cancionAEliminar = playlist.canciones.find(x => x.titulo == titulo).at(0)
     if (cancionAEliminar == null)
-        respuesta.status(404).send("no se encuentra la playlist")
+        res.status(404).send("no se encuentra la playlist")
 
     let indice = playlist.canciones.indexOf(cancionAEliminar)
     playlists.splice(indice, 1)
-    respuesta.send("se elimino la cancion")
+    res.send("se elimino la cancion")
 })
+
+export default router
