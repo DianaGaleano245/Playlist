@@ -1,4 +1,5 @@
 import express from 'express'
+import { send } from 'express/lib/response'
 const router = express.Router()
 import playlist from '../models/playlist.model'
 let playlists = [
@@ -21,60 +22,64 @@ let playlists = [
     }
 ]
 router.get('/playlists/:nombre', async (req, res) => {
-    let nombre = req.params.nombre
-    let resultado = playlists.find(x => x.nombre == nombre)
-    if (resultado.length != 1) {
+    try {
+        res.send(playlist)
         res.status(404).send(resultado)
-        return
+    } catch (err) {
+        res.status(500).send(err)
     }
-    res.send(resultado)
 })
 
-router.get('/playlists', (req, res) => {
-    res.send(playlists)
-})
-router.post('/playlists', (req, res) => {
-    if (req.body.nombre != "") {
-        playlists.push(req.body)
-        res.status(201).send(req.body)
-
+router.get('/playlists', async (req, res) => {
+    try {
+        let nombrePlaylist = req.params.nombre
+        const playlist = await playlists.findOne({ nombre: nombrePlaylist })
+        res.send(playlist)
+    } catch (err) {
+        res.status(500).send(err)
     }
-    else res.status(400).send(req.body)
 })
-
-router.put('/playlists/:nombre', (req, res) => {
-    let nombre = req.params.nombre
-    let playlist = playlists.find(x => x.nombre == nombre).at(0)
-    playlist.descripcion = req.body.descripcion
-    res.status(204).send(playlist)
-    if (req.body.nombre != "") {
-        playlists.push(req.body)
-        res.status(204).send(req.body)
-
+router.post('/playlists', async (req, res) => {
+    try {
+        const playlist = req.body
+        await playlist.create(playlist)
+        res.status(201).send(playlist)
+    } catch (err) {
+        res.status(500).send(err)
     }
-    else res.status(404).send(req.body)
-    res.status(409).send(req.body)
+})
+router.put('/playlists/:nombre', async (req, res) => {
+    try {
+        let nombrePlaylist = req.params.nombre
+        let playlist = req.body
+        await playlist.findOneAndUpdate({ nombre: nombrePlaylist }, nombre)
+        const playlistResponse = await playlist.findOne({ nombre: nombrePlaylist })
+        res.send(playlistResponse)
+    } catch (err) {
+        res.status(500).send(err)
+    }
+})
+router.delete('/playlists/:nombre', async (req, res) => {
+    try {
+        let nombrePlaylist = req.params.nombre
+        await playlist.findOneAndRemove({ nombre: nombrePlaylist })
+        res.status(204).send()
+    } catch (err) {
+        res.status(500).send(err)
+    }
+});
+router.get('/playlists/:nombre/canciones', async (req, res) => {
+    try {
+        let nombrePlaylist = req.params.nombre
+        const playlist = await playlists.findOne({ nombre: nombrePlaylist })
+        res.send(playlist.canciones)
+    } catch (err) {
+        res.status(500).send(err)
+    }
 })
 
-router.delete('/playlists/:nombre', (req, res) => {
-    let nombre = req.params.nombre
-    let playlistAEliminar = playlists.find(x => x.nombre == nombre).at(0)
-    if (playlistAEliminar == null)
-        res.status(404).send("no se encuentra la playlist")
 
-    let indice = playlists.indexOf(playlistAEliminar)
-    playlists.splice(indice, 1)
-    res.send("se elimino la playlist")
-})
-
-router.get('/playlists/:nombre/canciones', (req, res) => {
-    let nombre = req.params.nombre
-    let playlist = playlists.find(x => x.nombre == nombre).at(0)
-    if (playlist == null)
-        res.status(404).send("No se encuentra la playlist")
-
-    res.send(playlist.canciones)
-})
+//se termino 
 router.get('/playlists/:nombre/canciones/:titulo', (req, res) => {
     let nombre = req.params.nombre
     let titulo = req.params.titulo
